@@ -2,31 +2,27 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 export default function LoginPage(){
     const [form,setForm]=useState({email:"",password:""})
     const [error,setError]=useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = async(e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("")
-    try{
-        const res= await axios.post("http://localhost:5000/api/auth/login",{
-            email: form.email,
-            password: form.password
+    try {
+      let res = await axios.post("http://localhost:5000/api/auth/login", form);
 
-        },
-        {headers: {
-      "Content-Type": "application/json"
-    }}
-    );
-        console.log("Login response:", res.data);
-        localStorage.setItem("token",res.data.token);
-        navigate("/notes");
-    }catch(error){
-        setError(error.response?.data?.error || "Login failed");
+      
+      localStorage.setItem("token", res.data.token);
+
+      alert("Login successful!");
+      navigate("/notes"); 
+    } catch (err) {
+      alert("Login failed: " + err.response?.data?.message);
     }
-    };
+  };
+
     return(
         <div style={{ padding: "10px" }}>
             <h1>Login</h1>
