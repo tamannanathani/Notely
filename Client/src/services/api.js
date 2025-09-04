@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://notely-production-a4ee.up.railway.app/",
 });
 
 api.interceptors.request.use((config) => {
