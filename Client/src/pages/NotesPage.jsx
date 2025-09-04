@@ -62,59 +62,29 @@ export default function NotesPage(){
       >
         My Notes
       </Typography>
-
-      {/* Add Note Form */}
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          mb: 4,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          maxWidth: 500,
-          mx: "auto",
-        }}
-      >
-        <TextField
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          required
-          fullWidth
-        />
-        <TextField
-          placeholder="Content"
-          value={form.content}
-          onChange={(e) => setForm({ ...form, content: e.target.value })}
-          required
-          fullWidth
-          multiline
-          rows={4}
-        />
-        <Button type="submit" variant="contained">
-          Add Note
-        </Button>
-      </Box>
-
+      <Button 
+      variant="contained" 
+      sx={{ mb: 3 }}
+      onClick={() => navigate("/add")}> Add New Note
+      </Button>
+  
       {/* Notes Grid */}
       {notes.length === 0 ? (
         <Typography>No notes found. Add some!</Typography>
       ) : (
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={3} justifyContent="flex-start">
           {notes.map((note) => (
             <Grid
               item
-              xs={12}  // small: 1 per row
-              sm={6}   // medium: 2 per row
-              md={4}   // large: 3 per row
+              xs={12}  
+              sm={6}   
+              md={4}   
               key={note._id}
-              sx={{ display: "flex", justifyContent: "center" }}
             >
               <Card
                 sx={{
-                  width: 300,       // fixed width
-                  height: 250,      // fixed height
+                  width: 300,       
+                  height: 200,      
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -122,6 +92,7 @@ export default function NotesPage(){
                   boxShadow: 3,
                   borderRadius: 2,
                 }}
+                onClick={() => navigate(`/edit/${note._id}`)}
               >
                 <CardContent
                   sx={{
@@ -137,13 +108,10 @@ export default function NotesPage(){
 
                 <CardActions sx={{ justifyContent: "flex-end" }}>
                   <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    onClick={() => navigate(`/edit/${note._id}`)}
-                  >
-                    Edit
-                  </Button>
+                  size="small"
+                  variant="outlined"
+                  onClick={() => navigate(`/enhance/${note._id}`)}>
+                    Enhance</Button>
                   <Button
                     size="small"
                     variant="outlined"

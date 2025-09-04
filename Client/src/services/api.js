@@ -11,5 +11,14 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
-
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.data?.message === "jwt expired") {
+      localStorage.removeItem("token"); // logout
+      window.location.href = "/login";  // redirect
+    }
+    return Promise.reject(error);
+  }
+);
 export default api;

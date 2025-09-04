@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 
 const userSchema= new mongoose.Schema({
@@ -16,6 +16,11 @@ const userSchema= new mongoose.Schema({
         type: "String",
         required:true
     },
-})
+  profilePic:{
+    type: String,
+    default: ""
+  },
+  
+},{timeStamp:true})
 export default mongoose.model("User",userSchema)
 
