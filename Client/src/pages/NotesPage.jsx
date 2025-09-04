@@ -110,14 +110,18 @@ export default function NotesPage(){
                   <Button
                   size="small"
                   variant="outlined"
-                  onClick={() => navigate(`/enhance/${note._id}`)}>
+                  onClick={(e)=> {
+                     e.stopPropagation();
+                      navigate(`/enhance/${note._id}`)}}>
                     Enhance</Button>
                   <Button
                     size="small"
                     variant="outlined"
                     color="error"
                     startIcon={<DeleteIcon />}
-                    onClick={() => handleDelete(note._id)}
+                    onClick={(e) =>{
+                       e.stopPropagation();
+                       handleDelete(note._id)}}
                   >
                     Delete
                   </Button>
