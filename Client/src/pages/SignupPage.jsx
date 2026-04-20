@@ -16,9 +16,10 @@ export default function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     setError("");
     try {
-      const res = await api.post("/auth/signup", form);
+      const res = await api.post("/auth/signup",form);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("username", res.data.username);
       localStorage.setItem("profilePic", res.data.profilePic || "");
