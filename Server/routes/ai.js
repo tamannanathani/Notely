@@ -24,6 +24,9 @@ function cleanGeminiOutput(text) {
 router.post("/enhance", protect, async (req, res) => {
   const { noteId } = req.body;
   if (!noteId) return res.status(400).json({ message: "Note ID is required" });
+  if (!GEMINI_API_KEY) {
+    return res.status(500).json({ message: "GEMINI_API_KEY is not configured on server" });
+  }
 
   try {
     const note = await Note.findById(noteId);
@@ -36,6 +39,9 @@ router.post("/enhance", protect, async (req, res) => {
         contents: [
           { parts: [{ text: `${ENHANCE_PROMPT}\n\n${note.content}` }] }
         ]
+      },
+      {
+        timeout: 20000,
       }
     );
 
@@ -48,8 +54,24 @@ router.post("/enhance", protect, async (req, res) => {
 
     res.json({ enhancedNote });
   } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(500).json({ message: "Failed to enhance note" });
+    const upstreamStatus = err.response?.status;
+    const upstreamMessage =
+      err.response?.data?.error?.message ||
+      err.response?.data?.message ||
+      err.message;
+
+    console.error("Gemini enhance failed:", {
+      status: upstreamStatus,
+      message: upstreamMessage,
+    });
+
+    if (upstreamStatus && upstreamStatus >= 400 && upstreamStatus < 500) {
+      return res.status(502).json({
+        message: `Gemini request rejected: ${upstreamMessage}`,
+      });
+    }
+
+    res.status(500).json({ message: `Failed to enhance note: ${upstreamMessage}` });
   }
 });
 
