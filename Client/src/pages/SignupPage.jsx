@@ -1,6 +1,6 @@
 import api from "../services/api";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -92,7 +92,7 @@ export default function SignupPage() {
         )}
 
         <Typography variant="body2" sx={{ textAlign: "center" }}>
-          Already have an account? <a href="/login">Login</a>
+          Already have an account? <Link to="/login">Login</Link>
         </Typography>
 
         <Button type="submit" variant="contained" fullWidth>
