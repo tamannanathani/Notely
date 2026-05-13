@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
-import {
-    Box,Container,Typography,Grid,
-  Card,CardContent,CardActions,
-  Button,TextField }
-from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Button from "../components/ui/Button";
+import NoteCard from "../components/ui/NoteCard";
+import Spinner from "../components/ui/Spinner";
 
 export default function NotesPage(){
 
     const[notes,setNotes]=useState([]);
     const[form,setForm]=useState({title:"",content:""})
+    const[loading,setLoading]=useState(true);
     const navigate=useNavigate();
     //fetch all notes
     const fetchNotes=async()=>{
@@ -22,6 +19,8 @@ export default function NotesPage(){
         }catch(err){
             console.log(err)
             alert("Failed to fetch Notes")
+        }finally{
+            setLoading(false);
         }
     }
     useEffect(()=>{
@@ -55,82 +54,80 @@ export default function NotesPage(){
     }
     
     return(
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography
-        variant="h4"
-        sx={{ fontWeight: "bold", color: "#16918f", mb: 3 }}
-      >
-        My Notes
-      </Typography>
-      <Button 
-      variant="contained" 
-      sx={{ mb: 3 }}
-      onClick={() => navigate("/add")}> Add New Note
-      </Button>
-  
-      {/* Notes Grid */}
-      {notes.length === 0 ? (
-        <Typography>No notes found. Add some!</Typography>
-      ) : (
-        <Grid container spacing={3} justifyContent="flex-start">
-          {notes.map((note) => (
-            <Grid
-              item
-              xs={12}  
-              sm={6}   
-              md={4}   
-              key={note._id}
-            >
-              <Card
-                sx={{
-                  width: 300,       
-                  height: 200,      
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  p: 2,
-                  boxShadow: 3,
-                  borderRadius: 2,
-                }}
-                onClick={() => navigate(`/edit/${note._id}`)}
-              >
-                <CardContent
-                  sx={{
-                    flexGrow: 1,
-                    overflowY: "auto", // scroll if content too long
-                  }}
-                >
-                  <Typography variant="h6">{note.title}</Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {note.content}
-                  </Typography>
-                </CardContent>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-primary-600 mb-2">My Notes</h1>
+            <p className="text-gray-600">Keep track of your thoughts and ideas</p>
+          </div>
+          <Button 
+            variant="primary" 
+            size="lg"
+            onClick={() => navigate("/add")}
+            className="mt-4 sm:mt-0"
+          >
+            + Add New Note
+          </Button>
+        </div>
 
-                <CardActions sx={{ justifyContent: "flex-end" }}>
-                  <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={(e)=> {
-                     e.stopPropagation();
-                      navigate(`/enhance/${note._id}`)}}>
-                    Enhance</Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={(e) =>{
-                       e.stopPropagation();
-                       handleDelete(note._id)}}
-                  >
-                    Delete
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-    </Container>
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : notes.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow-md">
+            <p className="text-gray-600 text-lg">No notes found yet.</p>
+            <p className="text-gray-500">Start creating notes to organize your thoughts!</p>
+            <Button 
+              variant="primary" 
+              size="md"
+              onClick={() => navigate("/add")}
+              className="mt-6"
+            >
+              Create Your First Note
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {notes.map((note) => (
+              <NoteCard
+                key={note._id}
+                title={note.title}
+                content={note.content}
+                date={note.createdAt || note.updatedAt}
+                onClick={() => navigate(`/edit/${note._id}`)}
+                actions={
+                  <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e)=> {
+                        e.stopPropagation();
+                        navigate(`/enhance/${note._id}`)
+                      }}
+                    >
+                      Enhance
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={(e) =>{
+                        e.stopPropagation();
+                        handleDelete(note._id)
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                }
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
     )
 }
