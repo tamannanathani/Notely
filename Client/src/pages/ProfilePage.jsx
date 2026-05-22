@@ -1,99 +1,72 @@
 import { useEffect, useState } from "react";
-import { Container, Typography, Avatar, Box, Grid, Paper, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { clearStoredSession } from "../utils/session";
 
 export default function ProfilePage() {
-    const [user, setUser] = useState(null);
-
-    const fetchProfile = async () => {
-  try {
-    const res = await api.get("/users/me");
-    console.log("Profile data from backend:", res.data);
-    setUser(res.data);
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load profile");
-  }
-};
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProfile();
-    }, []);
-if (!user) return <Typography>Loading...</Typography>;
-
-  // Days active = today - createdAt
-  const daysActive = Math.floor(
-    (new Date() - new Date(user.createdAt)) / (1000 * 60 * 60 * 24)
-  );
+    api.get("/users/me").then((response) => setUser(response.data)).catch(() => navigate("/login"));
+  }, [navigate]);
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      return;
-    }
+    const confirmed = window.confirm("Delete your account and all notes?");
+    if (!confirmed) return;
 
-    try {
-      await api.delete("/users/me");
-      localStorage.removeItem("token");
-      alert("Account deleted successfully");
-      navigate("/signup")
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete account");
-    }
+    await api.delete("/users/me");
+    clearStoredSession();
+    navigate("/signup");
   };
+
+  if (!user) {
+    return <div className="mx-auto max-w-4xl rounded-[28px] border border-[var(--surface-border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-xl)]">Loading profile...</div>;
+  }
+
+  const daysActive = Math.max(
+    1,
+    Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+  );
+
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
-          <Avatar
-            src={user.profilePic}
-            alt="user.username"
-            variant="circular"
-            sx={{ width: 100, height: 100, mb: 2, objectFit:"cover"}}
-          />
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#16918f" }}>
-            {user.username}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">Email: 
-         <i>{user.email}</i>
-         </Typography>
-          <Typography variant="body2" color="text.secondary">
-            DOB: {user.dob}
-          </Typography>
-        </Box>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <section className="rounded-[32px] border border-[var(--surface-border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-xl)] backdrop-blur-xl">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--brand)] text-3xl font-bold text-white">
+              {user.username?.[0]?.toUpperCase()}
+            </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.28em] text-[var(--text-secondary)]">Profile</p>
+              <h1 className="mt-2 font-['Plus_Jakarta_Sans'] text-3xl font-extrabold">{user.username}</h1>
+              <p className="mt-1 text-[var(--text-secondary)]">{user.email}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleDeleteAccount}
+            className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white dark:bg-white dark:text-slate-950"
+          >
+            Delete account
+          </button>
+        </div>
+      </section>
 
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Paper elevation={1} sx={{ p: 2, textAlign: "center", borderRadius: 2 }}>
-              <Typography variant="h6">{user.notesCount}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Notes
-              </Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Paper elevation={1} sx={{ p: 2, textAlign: "center", borderRadius: 2,}}>
-              <Typography variant="h6">{daysActive}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Days Active
-              </Typography>
-            </Paper></Grid>
-            <Grid item xs={12}>
-              <Paper elevation={1} sx={{p: 2,textAlign: "center",borderRadius: 2,bgcolor: "#fff5f5", 
-              }}>
-                <Button
-                variant="contained"
-                color="error"
-                onClick={handleDeleteAccount}>
-                  Delete Account
-                  </Button>
-                  </Paper>
-                  </Grid>
-          
-        </Grid>
-      </Paper>
-    </Container>
+      <section className="grid gap-4 sm:grid-cols-3">
+        <article className="rounded-[28px] border border-[var(--surface-border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-xl)]">
+          <p className="text-sm uppercase tracking-[0.24em] text-[var(--text-secondary)]">Notes</p>
+          <p className="mt-3 text-4xl font-extrabold">{user.notesCount}</p>
+        </article>
+        <article className="rounded-[28px] border border-[var(--surface-border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-xl)]">
+          <p className="text-sm uppercase tracking-[0.24em] text-[var(--text-secondary)]">Days active</p>
+          <p className="mt-3 text-4xl font-extrabold">{daysActive}</p>
+        </article>
+        <article className="rounded-[28px] border border-[var(--surface-border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-xl)]">
+          <p className="text-sm uppercase tracking-[0.24em] text-[var(--text-secondary)]">Workspace</p>
+          <p className="mt-3 text-lg font-semibold">AI-enhanced knowledge base</p>
+        </article>
+      </section>
+    </div>
   );
 }
-

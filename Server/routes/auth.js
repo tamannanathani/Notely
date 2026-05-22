@@ -20,15 +20,23 @@ router.post("/signup",isValidate(signupSchema),async(req,res)=>{
             id:user._id,
             email:user.email},
             process.env.JWT_SECRET,
-            {expiresIn:process.env.JWT_EXPIRES}
+            {expiresIn:process.env.JWT_EXPIRES || "7d"}
         );
+    
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.status(200).json({message:"user has been created successfully",
+        token,
         user:{
             id:user._id,
             username:user.username,
             email:user.email
-        },
-        token
+        }
     })
     }catch(err){
         console.log("signup err",err)
@@ -53,14 +61,37 @@ router.post("/login",isValidate(loginSchema),async(req,res)=>{
             id:user._id,
             email:user.email},
             process.env.JWT_SECRET,
-            {expiresIn:process.env.JWT_EXPIRES}
+            {expiresIn:process.env.JWT_EXPIRES || "7d"}
         );
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
         res.status(200).json({
             message:"login successful",
-            token
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                profilePic: user.profilePic
+            }
         })
     }catch(err){
         res.status(404).json({error:"login failed",err})
     }
 })
+
+router.post("/logout", (req, res) => {
+    res.cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(0)
+    });
+    res.status(200).json({ message: "logged out successfully" });
+});
+
 export default router;

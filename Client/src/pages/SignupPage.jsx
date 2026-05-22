@@ -1,104 +1,70 @@
-import api from "../services/api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-} from "@mui/material";
+import api from "../services/api";
+import { setStoredSession } from "../utils/session";
 
 export default function SignupPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("");
+
     try {
-      const res = await api.post("/auth/signup",form);
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("username", res.data.username);
-      localStorage.setItem("profilePic", res.data.profilePic || "");
-      alert("Signup successful!");
+      const response = await api.post("/auth/signup", form);
+      setStoredSession({
+        token: response.data.token,
+        user: response.data.user,
+      });
       navigate("/notes");
     } catch (err) {
-      setError(err.response?.data?.error || "Signup failed");
+      setError(err.response?.data?.message || err.response?.data?.error || "Signup failed");
     }
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "80vh", // vertical centering
-      }}
-    >
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          width: "100%",
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ textAlign: "center", color: "#16918f", fontWeight: "bold" }}
-        >
-          Signup
-        </Typography>
+    <div className="mx-auto max-w-md rounded-[32px] border border-[var(--surface-border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-xl)] backdrop-blur-xl">
+      <p className="text-sm uppercase tracking-[0.28em] text-[var(--text-secondary)]">Get started</p>
+      <h1 className="mt-3 font-['Plus_Jakarta_Sans'] text-4xl font-extrabold tracking-tight">Create your Notely account</h1>
 
-        <TextField
-          label="Username"
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <input
+          required
           value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-          required
-          fullWidth
+          onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))}
+          placeholder="Full name"
+          className="w-full rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-strong)] px-4 py-3 outline-none"
         />
-        <TextField
+        <input
           type="email"
-          label="Email"
+          required
           value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-          fullWidth
+          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+          placeholder="Email address"
+          className="w-full rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-strong)] px-4 py-3 outline-none"
         />
-        <TextField
+        <input
           type="password"
-          label="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
-          fullWidth
+          value={form.password}
+          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+          placeholder="Password"
+          className="w-full rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-strong)] px-4 py-3 outline-none"
         />
+        {error && <p className="rounded-2xl bg-[var(--danger-soft)] px-4 py-3 text-sm text-red-700 dark:text-red-300">{error}</p>}
+        <button type="submit" className="w-full rounded-2xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white">
+          Create account
+        </button>
+      </form>
 
-        {error && (
-          <Typography color="error" variant="body2" sx={{ textAlign: "center" }}>
-            {error}
-          </Typography>
-        )}
-
-        <Typography variant="body2" sx={{ textAlign: "center" }}>
-          Already have an account? <Link to="/login">Login</Link>
-        </Typography>
-
-        <Button type="submit" variant="contained" fullWidth>
-          Signup
-        </Button>
-      </Box>
-    </Container>
+      <p className="mt-6 text-sm text-[var(--text-secondary)]">
+        Already have an account?{" "}
+        <Link to="/login" className="font-semibold text-[var(--brand)]">
+          Sign in
+        </Link>
+      </p>
+    </div>
   );
 }

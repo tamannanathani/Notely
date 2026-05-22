@@ -1,25 +1,46 @@
+import dotenv from "dotenv";
+dotenv.config();  // This MUST be first
+
 import express from "express"
 import cors from "cors"
-import dotenv from "dotenv";
 import mongoose from "mongoose";
-import  notesRouter from "./routes/notes.js"
+import notesRouter from "./routes/notes.js"
 import userRouter from "./routes/profile.js"
 import authRouter from "./routes/auth.js"
 import methodOverride from "method-override"
 import aiRouter from "./routes/ai.js";
+import cookieParser from "cookie-parser";
+import metaRouter from "./routes/meta.js";
 
-
-dotenv.config();
 
 
 const app=express();
 const PORT=process.env.PORT
+const allowedOrigins = (
+  process.env.CLIENT_URLS ||
+  process.env.CLIENT_URL ||
+  "http://localhost:5173,http://localhost:5174"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
 
-app.use(cors());
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
+app.use(cookieParser());
 
 app.get("/",(req,res)=>{
     res.send("root route")
@@ -29,6 +50,7 @@ app.use("/api/notes/",notesRouter)
 app.use("/api/auth",authRouter)
 app.use("/api/users", userRouter);
 app.use("/api/ai", aiRouter);
+app.use("/api/meta", metaRouter);
 
 
 //error handler middleware

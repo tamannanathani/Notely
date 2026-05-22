@@ -1,26 +1,77 @@
 
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap");
+@import "tailwindcss";
 
-#root, body {
-  background-color: #f0fdfa;
-  color: #262b2d;
-  font-family: 'Montserrat', sans-serif;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --app-bg: #f5f7fb;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: #ffffff;
+  --surface-border: rgba(148, 163, 184, 0.22);
+  --surface-accent: #e0f2fe;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --brand: #0f766e;
+  --brand-strong: #0f5c56;
+  --brand-soft: #ccfbf1;
+  --danger-soft: #fee2e2;
+  --shadow-xl: 0 24px 70px rgba(15, 23, 42, 0.12);
+  --hero-glow: radial-gradient(circle at top left, rgba(45, 212, 191, 0.35), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.22), transparent 30%);
+}
+
+.dark {
+  color-scheme: dark;
+  --app-bg: #09111f;
+  --surface: rgba(15, 23, 42, 0.74);
+  --surface-strong: #0f172a;
+  --surface-border: rgba(148, 163, 184, 0.16);
+  --surface-accent: rgba(15, 118, 110, 0.14);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --brand: #5eead4;
+  --brand-strong: #99f6e4;
+  --brand-soft: rgba(45, 212, 191, 0.15);
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --shadow-xl: 0 28px 80px rgba(2, 6, 23, 0.5);
+  --hero-glow: radial-gradient(circle at top left, rgba(45, 212, 191, 0.18), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.15), transparent 30%);
+}
+
+html {
+  background: var(--app-bg);
+}
+
+body {
   margin: 0;
-  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 26%),
+    var(--hero-glow),
+    var(--app-bg);
+  color: var(--text-primary);
+  font-family: "IBM Plex Sans", sans-serif;
 }
 
-.logo {
-  filter: drop-shadow(0 0 1.5em #12aeabaa);
+* {
+  box-sizing: border-box;
 }
 
-.card {
-  background-color: white;
-  color: #262b2d;
+#root {
+  min-height: 100vh;
 }
 
-.read-the-docs {
-  color: #16918f;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-.read-the-docs:hover {
-  color: #12aeab;
+[contenteditable="true"]:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
 }

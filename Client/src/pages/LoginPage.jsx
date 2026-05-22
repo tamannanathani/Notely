@@ -1,86 +1,64 @@
-import api from "../services/api";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Container,
-  Box,
-  TextField,
-  Typography,
-  Button
-} from "@mui/material";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { setStoredSession } from "../utils/session";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+
     try {
-      let res = await api.post("/auth/login", form);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("username", res.data.username);
-        localStorage.setItem("profilePic", res.data.profilePic || "");
-      alert("Login successful!");
-      navigate("/notes");
+      const response = await api.post("/auth/login", form);
+      setStoredSession({
+        token: response.data.token,
+        user: response.data.user,
+      });
+      navigate(location.state?.from || "/notes");
     } catch (err) {
-      alert("Login failed: " + err.response?.data?.message);
+      setError(err.response?.data?.message || err.response?.data?.error || "Login failed");
     }
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "80vh", // center vertically
-      }}
-    >
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          width: "100%",
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ textAlign: "center", color: "#16918f", fontWeight: "bold" }}
-        >
-          Login
-        </Typography>
+    <div className="mx-auto max-w-md rounded-[32px] border border-[var(--surface-border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-xl)] backdrop-blur-xl">
+      <p className="text-sm uppercase tracking-[0.28em] text-[var(--text-secondary)]">Welcome back</p>
+      <h1 className="mt-3 font-['Plus_Jakarta_Sans'] text-4xl font-extrabold tracking-tight">Sign in to your workspace</h1>
 
-        <TextField
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <input
           type="email"
-          label="Email"
+          required
           value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          required
-          fullWidth
+          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+          placeholder="Email address"
+          className="w-full rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-strong)] px-4 py-3 outline-none"
         />
-        <TextField
+        <input
           type="password"
-          label="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
-          fullWidth
+          value={form.password}
+          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+          placeholder="Password"
+          className="w-full rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-strong)] px-4 py-3 outline-none"
         />
-        <Typography variant="body2" sx={{ textAlign: "center" }}>
-          Don't have an account? <Link to="/signup">Sign Up</Link>
-        </Typography>
-        <Button type="submit" variant="contained" fullWidth>
+        {error && <p className="rounded-2xl bg-[var(--danger-soft)] px-4 py-3 text-sm text-red-700 dark:text-red-300">{error}</p>}
+        <button type="submit" className="w-full rounded-2xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white">
           Login
-        </Button>
-      </Box>
-    </Container>
+        </button>
+      </form>
+
+      <p className="mt-6 text-sm text-[var(--text-secondary)]">
+        New to Notely?{" "}
+        <Link to="/signup" className="font-semibold text-[var(--brand)]">
+          Create an account
+        </Link>
+      </p>
+    </div>
   );
 }
