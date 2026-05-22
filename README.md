@@ -31,34 +31,6 @@ Notely is an **intelligent note-taking application** built with the **MERN stack
 
 ---
 
-## 🏗️ Architecture
-┌─────────────────────────────────────────────────────────────┐
-│ Notely Architecture │
-├─────────────────────────────────────────────────────────────┤
-│ │
-│ Frontend (React + Vite) │
-│ ├── Rich Text Editor (TipTap) │
-│ ├── AI Actions Panel │
-│ └── RAG Question Interface │
-│ │
-│ Backend (Express.js) │
-│ ├── Notes CRUD API │
-│ ├── AI Enhancement Routes │
-│ └── RAG Query Endpoint │
-│ │
-│ AI Services │
-│ ├── OpenRouter API │
-│ │ ├── Gemini 2.0 Flash (Text Generation) │
-│ │ └── Text Embedding 3 Small (Vector Embeddings) │
-│ └── Pinecone (Vector Database) │
-│ └── Semantic Search (512-dimension vectors) │
-│ │
-│ Database │
-│ └── MongoDB Atlas (Notes, Users, Tags, Folders) │
-│ │
-└─────────────────────────────────────────────────────────────┘
-
-text
 
 ### How RAG Works
 📝 Note Created/Updated
