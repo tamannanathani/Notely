@@ -19,7 +19,8 @@ const PORT=process.env.PORT
 const allowedOrigins = (
   process.env.CLIENT_URLS ||
   process.env.CLIENT_URL ||
-  "http://localhost:5173,http://localhost:5174"
+  "http://localhost:5173,http://localhost:5174",
+  "https://notely-kohl-nine.vercel.app"
 )
   .split(",")
   .map((origin) => origin.trim())
