@@ -1,124 +1,234 @@
-# 📝 Notely – AI‑Powered Notes App
+# 📝 Notely – AI‑Powered Notes App with RAG 🚀
 
-Notely is an **AI-powered notes application** built using the **MERN stack** that helps users create, manage, search, and enhance notes intelligently. It is designed to boost productivity by combining traditional note‑taking with modern AI capabilities.
+Notely is an **intelligent note-taking application** built with the **MERN stack** that combines traditional note management with cutting-edge AI capabilities. It features **Retrieval-Augmented Generation (RAG)** for semantic search across your knowledge base, AI-powered content enhancement, and smart organization tools.
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-* ✍️ Create, edit, and delete notes
-* 🧠 AI-powered note summarization (planned / integrated)
-* 🔍 Smart search across notes
-* 🗂️ Organize notes with tags or categories
-* 🔐 Secure authentication (JWT-based)
-* ☁️ Cloud-based data storage with MongoDB
-* 📱 Responsive UI for all devices
+### 📝 Note Management
+- ✍️ Create, edit, and delete rich-text notes
+- 📁 Organize with folders and tags
+- 📌 Pin, archive, and trash notes
+- 📥 Import notes from files
+- 🎨 Color-coded notes for visual organization
+- 🔐 Secure JWT-based authentication
+- 💾 Auto-save functionality
+
+### 🤖 AI-Powered Features
+- 🚀 **Enhance Writing** – AI expands notes with detailed explanations, examples, and statistics
+- 📋 **Generate Titles** – Auto-generate meaningful titles from content
+- 📊 **Summarize Notes** – Get concise AI-powered summaries
+- 🏷️ **Extract Keywords** – Automatic tag extraction and suggestions
+- ❓ **Ask Questions** – Query your notes in natural language
+
+### 🔍 RAG (Retrieval-Augmented Generation)
+- 💬 **Ask Your Notes** – Ask questions and get answers based on YOUR note content
+- 🧠 **Semantic Search** – Finds notes by meaning, not just keywords
+- 📎 **Source Attribution** – See which notes were used to generate answers with relevance scores
+- 🔗 **Cross-Note Intelligence** – Connects information across your entire knowledge base
+- ⚡ **Real-Time Indexing** – Notes are automatically indexed for search on create/update/delete
+
+---
+
+## 🏗️ Architecture
+┌─────────────────────────────────────────────────────────────┐
+│ Notely Architecture │
+├─────────────────────────────────────────────────────────────┤
+│ │
+│ Frontend (React + Vite) │
+│ ├── Rich Text Editor (TipTap) │
+│ ├── AI Actions Panel │
+│ └── RAG Question Interface │
+│ │
+│ Backend (Express.js) │
+│ ├── Notes CRUD API │
+│ ├── AI Enhancement Routes │
+│ └── RAG Query Endpoint │
+│ │
+│ AI Services │
+│ ├── OpenRouter API │
+│ │ ├── Gemini 2.0 Flash (Text Generation) │
+│ │ └── Text Embedding 3 Small (Vector Embeddings) │
+│ └── Pinecone (Vector Database) │
+│ └── Semantic Search (512-dimension vectors) │
+│ │
+│ Database │
+│ └── MongoDB Atlas (Notes, Users, Tags, Folders) │
+│ │
+└─────────────────────────────────────────────────────────────┘
+
+text
+
+### How RAG Works
+📝 Note Created/Updated
+↓
+Text → Embedding Model → 512-number Vector → Pinecone Storage
+
+❓ User Asks Question
+↓
+Question → Embedding → Pinecone Search (Cosine Similarity)
+↓
+Top 3-5 Most Relevant Notes Found
+↓
+Full Note Content Retrieved from MongoDB
+↓
+Context + Question → Gemini 2.0 Flash
+↓
+Answer Generated + Source Attribution with Relevance Scores
+
+text
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
-* React.js
-* Tailwind CSS / CSS Modules
-* Axios
+- **React.js** with Vite
+- **Tailwind CSS** for styling
+- **TipTap** Rich Text Editor
+- **React Router** for navigation
+- **Axios** for API calls
 
 ### Backend
+- **Node.js** with Express
+- **MongoDB** with Mongoose ODM
+- **JWT** Authentication
+- **Multer** for file uploads
+- **Dotenv** for configuration
 
-* Node.js
-* Express.js
-* MongoDB (Mongoose)
-* JWT Authentication
+### AI & Machine Learning
+- **OpenRouter API**
+  - Gemini 2.0 Flash (Text generation, enhancement, summarization)
+  - Text Embedding 3 Small (Vector embeddings - 512 dimensions)
+- **Pinecone** (Vector database for semantic search)
+- **Cosine Similarity** for relevance scoring
 
-##
-
-```
-```
+### Deployment
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** MongoDB Atlas
+- **Vector DB:** Pinecone Cloud
 
 ---
 
-## ⚙️ Installation & Setup
+## 📦 Installation & Setup
+
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- OpenRouter API key
+- Pinecone account
 
 ### 1️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/notely.git
 cd notely
-```
-
-### 2️⃣ Backend Setup
-
-```bash
-cd server
+2️⃣ Backend Setup
+bash
+cd Server
 npm install
-```
+Create a .env file in the Server directory:
 
-Create a `.env` file:
-
-```
+env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
+MONGO_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-OPENAI_API_KEY=your_api_key
-```
+JWT_EXPIRES=7d
+NODE_ENV=development
 
-Run backend:
+# AI Services
+OPENROUTER_API_KEY=your_openrouter_api_key
 
-```bash
-npm run dev
-```
+# Vector Database
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX_HOST=your_pinecone_host_url
 
-### 3️⃣ Frontend Setup
+# Frontend URL
+CLIENT_URL=http://localhost:5173
+Run the backend:
 
-```bash
-cd client
-npm install
+bash
 npm start
+3️⃣ Frontend Setup
+bash
+cd Client
+npm install
+Create a .env file in the Client directory:
+
+env
+VITE_API_URL=http://localhost:5000/api
+Run the frontend:
+
+bash
+npm run dev
+4️⃣ Pinecone Setup
+Create a free account at Pinecone
+
+Create an index named notes-rag
+
+Set Dimensions: 512
+
+Set Metric: cosine
+
+Copy your API key and host URL to .env
+
+5️⃣ Index Your Notes
+After creating some notes, index them for RAG search:
+
+bash
+curl -X POST http://localhost:5000/api/ai/index-all-notes \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+Or use Postman:
+
+text
+
+🔒 Security
+JWT-based authentication with token expiration
+
+All notes are user-scoped (users can only access their own data)
+
+AI queries only search the authenticated user's notes
+
+Environment variables for all sensitive keys
+
+CORS protection with whitelist
+
+Input validation on all endpoints
+
+Password hashing with bcrypt
+
+🧩 Future Enhancements
+🎙️ Voice-to-text notes
+
+📄 Export notes as PDF / Markdown / HTML
+
+🤝 Real-time collaboration
+
+🔔 AI-powered study reminders
+
+📱 Mobile app (React Native)
+
+🌐 Multi-language support
+
+🔌 Third-party integrations (Notion, Google Drive, etc.)
+
+📈 Advanced analytics dashboard
+
+🤝 Contributing
+Contributions are welcome! Here's how you can help:
+
+Fork the repository
+
+Create a new branch (git checkout -b feature/amazing-feature)
+
+Commit your changes (git commit -m 'Add amazing feature')
+
+Push to the branch (git push origin feature/amazing-feature)
+
+Open a Pull Request
+
+
 ```
 
----
-
-```md
-```
-
----
-
-## 🎯 Use Cases
-
-* Students managing study notes
-* Developers storing code snippets
-* Professionals organizing meeting notes
-* Quick AI-generated summaries for revision
-
----
-
-## 🧩 Future Enhancements
-
-* 🧠 Advanced AI summarization & note suggestions
-* 🎙️ Voice-to-text notes
-* 📄 Export notes as PDF / Markdown
-* 🤝 Real-time collaboration
-* 🌙 Dark mode
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repo
-2. Create a new branch
-3. Commit your changes
-4. Open a Pull Request
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-
-⭐ If you like this project, don’t forget to star the repository!
